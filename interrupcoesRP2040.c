@@ -5,6 +5,8 @@
 
 #include "ws2812b.pio.h"
 
+/* Desenvolvedor: Marco Túlio Macêdo Oliveira dos Santos */ 
+
 // Identificação das GPIOs conectadas aos LEDs RGB
 #define LED_R_PIN 13
 
@@ -14,7 +16,7 @@
 
 // Definição do número de LEDs na Matrix, da intensidade dos LEDs e da GPIO
 #define LED_MTX_COUNT 25
-#define LED_MTX_LEVEL 20
+#define LED_MTX_LEVEL 20 // A intesidade está baixa para não causar incômodo (0-255, caso deseje alterar)
 #define LED_MTX_PIN 7
 
 // Definições relacionadas ao controle de tempo e debounce
