@@ -7,8 +7,6 @@
 
 // Identificação das GPIOs conectadas aos LEDs RGB
 #define LED_R_PIN 13
-#define LED_G_PIN 11
-#define LED_B_PIN 12
 
 // Identificação das GPIOs conectadas aos botões A e B
 #define BTN_A_PIN 5
@@ -16,11 +14,11 @@
 
 // Definição do número de LEDs na Matrix, da intensidade dos LEDs e da GPIO
 #define LED_MTX_COUNT 25
-#define LED_MTX_LEVEL 10
+#define LED_MTX_LEVEL 20
 #define LED_MTX_PIN 7
 
 // Definições relacionadas ao controle de tempo e debounce
-#define DEBOUNCE_TIME 100
+#define DEBOUNCE_TIME 50
 #define TIME to_ms_since_boot(get_absolute_time())
 
 // Definição do pixel GRB
@@ -64,17 +62,13 @@ void init_pio(uint pin) {
  * Função de inicialização das GPIOs
  */
 void init_gpio() {
-    // Inicializa os pinos GPIO dos LEDs e botões
+    // Inicializa os pinos GPIO do LED e botões
     gpio_init(LED_R_PIN);
-    gpio_init(LED_G_PIN);
-    gpio_init(LED_B_PIN);
     gpio_init(BTN_A_PIN);
     gpio_init(BTN_B_PIN);
 
-    // Define LEDs como saída e botões como entrada
+    // Define o LED como saída e botões como entrada
     gpio_set_dir(LED_R_PIN, GPIO_OUT);
-    gpio_set_dir(LED_G_PIN, GPIO_OUT);
-    gpio_set_dir(LED_B_PIN, GPIO_OUT);
 
     gpio_set_dir(BTN_A_PIN, GPIO_IN);
     gpio_set_dir(BTN_B_PIN, GPIO_IN);
@@ -83,10 +77,8 @@ void init_gpio() {
     gpio_pull_up(BTN_A_PIN);
     gpio_pull_up(BTN_B_PIN);
 
-    // Inicializa LEDs apagados
+    // Inicializa o LED apagado
     gpio_put(LED_R_PIN, 0);
-    gpio_put(LED_G_PIN, 0);
-    gpio_put(LED_B_PIN, 0);
 }
 
 /*
