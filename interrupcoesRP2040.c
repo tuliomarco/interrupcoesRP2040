@@ -14,8 +14,9 @@
 #define BTN_A_PIN 5
 #define BTN_B_PIN 6
 
-// Definição do número de LEDs na Matrix a GPIO
+// Definição do número de LEDs na Matrix, da intensidade dos LEDs e da GPIO
 #define LED_MTX_COUNT 25
+#define LED_MTX_LEVEL 10
 #define LED_MTX_PIN 7
 
 // Definição do pixel GRB
@@ -24,6 +25,19 @@ typedef struct pixel_t {
 } led_t;
 
 led_t led_matrix[LED_MTX_COUNT]; // Declaração do buffer de pixels que compõem a matriz
+
+uint32_t led_number_pattern[10] = {
+    0b0111001010010100101001110, // Número 0
+    0b0010000110101000010000100, // Número 1
+    0b0111001000011100001001110, // Número 2
+    0b0111001000011100100001110, // Número 3
+    0b0101001010011100100000010, // Número 4
+    0b0111000010011100100001110, // Número 5
+    0b0111001000011100101001110, // Número 6
+    0b0111001000000100100000010, // Número 7
+    0b0111001010011100101001110, // Número 8
+    0b0111001010011100100001110  // Número 9
+};
 
 // Variáveis para uso da PIO
 PIO pio;
@@ -73,6 +87,18 @@ void set_led(const uint id, const uint8_t R, const uint8_t G, const uint8_t B) {
 }
 
 /*
+ * Decodificação do padrão binário para LEDs da matriz
+ */
+void set_led_by_pattern(uint32_t pattern) {
+    uint lvl = LED_MTX_LEVEL;
+    for(uint i = 0; i < LED_MTX_COUNT; i++) {
+        // Verfica se o bit é 1. Em casos positivos, acende o LED na cor branca com a intensidade setada
+        if((pattern >> i) & 1) set_led(i, lvl, lvl, lvl); 
+        else set_led(i, lvl, 0, 0); // Caso contrário, deixa o LED na cor vermelha 
+    }
+}
+
+/*
  * Limpeza do buffer de LEDs
  */
 void clear_leds() {
@@ -83,14 +109,18 @@ void clear_leds() {
     }
 }
 
+uint32_t rgb_value(uint8_t B, uint8_t R, uint8_t G){
+  return (G << 24) | (R << 16) | (B << 8);
+}
+
 /*
  * Transferência dos valores do buffer para a matriz de LEDs
  */
 void write_leds() {
+    uint32_t value;
     for (uint i = 0; i < LED_MTX_COUNT; ++i) {
-        pio_sm_put_blocking(pio, sm, led_matrix[i].G);
-        pio_sm_put_blocking(pio, sm, led_matrix[i].R);
-        pio_sm_put_blocking(pio, sm, led_matrix[i].B);
+        value = rgb_value(led_matrix[i].B, led_matrix[i].R, led_matrix[i].G);
+        pio_sm_put_blocking(pio, sm, value);
     }
 }
 
@@ -99,7 +129,7 @@ int main() {
     init_pio(LED_MTX_PIN);
     clear_leds();
     init_gpio();
-
+    
     while (true) {
         sleep_ms(100);
         gpio_put(LED_R_PIN, 0);
